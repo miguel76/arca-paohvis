@@ -1,0 +1,21 @@
+prefix schema: <http://schema.org/>
+prefix lerma:          <http://lerma.org/>
+prefix dbo: <http://dbpedia.org/ontology/>
+prefix yago: <http://dbpedia.org/class/yago/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+select distinct ?b ?c ?bd ?bdd ?bdys ?bdys2
+where {
+  ?b a lerma:Book;
+       lerma:other_concept ?c.
+  SERVICE <http://dbpedia.org/sparql> {
+    ?c a dbo:Person, yago:WikicatAncientRomanPoliticians;
+     dbo:birthDate ?bd.
+#     dbo:deathDate ?dd.
+  }
+#    BIND(xsd:date(?bd) AS ?bdd).
+    BIND(SUBSTR(?bd,2) AS ?bdys).
+    BIND(STRBEFORE(?bdys, "-") AS ?bdys2).
+# CONCAT(SUBSTR(?bd,1,1), STRBEFORE(SUBSTR(?bd,2), "-"))
+    
+} limit 50
