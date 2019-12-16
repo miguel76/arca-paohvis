@@ -3,27 +3,24 @@ prefix lerma:          <http://lerma.org/>
 prefix dbo: <http://dbpedia.org/ontology/>
 prefix yago: <http://dbpedia.org/class/yago/>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix dbr: <http://dbpedia.org/resource/>
+#prefix dbr: <http://dbpedia.org/resource/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-select distinct ?b ?c ?bd ?bdd ?bdy ?dt
+select distinct ?person ?book ?bdy ?personName
 where {
-  ?b a lerma:Book;
-       lerma:other_concept ?c.
-  SERVICE <http://dbpedia.org/sparql> {
-    ?c a dbo:Person, yago:WikicatAncientRomanPoliticians;
-     dbo:birthDate ?bd.
-#     dbo:deathDate ?dd.
+  ?book a lerma:Book;
+       lerma:other_concept ?person.
+#  FILTER (REGEX(?c,"Day"))
+  SERVICE <http://dbpedia.org/sparql/> {
+#    ?c a yago:WikicatAncientRomanPoliticians
+    ?person a dbo:Person, yago:WikicatAncientRomanPoliticians;
+       dbo:birthDate ?bd;
+       rdfs:label ?personName.
+    FILTER(LANGMATCHES(LANG(?personName), "en"))
+#     dbo:deathDate ?bd.
   }
-    BIND(xsd:date(STR(?bd)) AS ?bdd).
-#  OPTIONAL {
-    FILTER(BOUND(?bdd)).
-#    BIND(xsd:date(?bd) AS )
-    FILTER(?c = dbr:Pompey).
-  	BIND(DATATYPE(?bd) AS ?dt).
-#    BIND(YEAR(?bd) AS ?bdy).
-#    BIND(SUBSTR(?bd,2) AS ?bdys).
-#  	BIND(LANG(?bdys) AS ?lang).
-#    BIND(STRBEFORE(?bdys, '-') AS ?bdys2).
- # }
-} limit 50
-# CONCAT(SUBSTR(?bd,1,1), STRBEFORE(SUBSTR(?bd,2), "-"))
+#  FILTER(?c = dbr:Pompey).
+#  	BIND(DATATYPE(?bd) AS ?dt).
+  BIND(STR(?bd) AS ?bds).
+  BIND(xsd:integer(CONCAT(SUBSTR(?bds,1,1), STRBEFORE(SUBSTR(?bds,2), '-'))) AS ?bdy).
+} limit 100
